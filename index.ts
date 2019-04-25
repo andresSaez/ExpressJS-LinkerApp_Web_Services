@@ -42,7 +42,7 @@ server.app.use( cors( { origin: true, credentials: true } ) );
 // Fileupload
 server.app.use( fileupload() );
 
-server.app.use('/auth', router.authRouter );
+server.app.use(environment.prefix + '/auth', router.authRouter );
 
 
 

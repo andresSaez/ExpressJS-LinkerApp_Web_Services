@@ -11,5 +11,6 @@ export const environment = {
         port: '27017',
         database: 'linker'
     },
-    server_port: Number( process.env.PORT || 5000 )
+    server_port: Number( process.env.PORT || 5000 ),
+    prefix: '/api/v1'
 };
