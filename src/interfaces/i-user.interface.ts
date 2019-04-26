@@ -18,7 +18,7 @@ export interface IUser {
     lastconnection?: string;
     me?: boolean;
     onesignalid?: string;
-    contacts?: IUser[];
+    contacts?: string[];
     chats?: IChat[];
     rooms?: IRoom[];
     privaterooms?: IPrivateRoom[];

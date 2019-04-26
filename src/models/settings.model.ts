@@ -79,6 +79,6 @@ let settingsSchema = new mongoose.Schema({
     }
 });
 
-let SettingsModel = mongoose.model('setting', settingsSchema);
+let SettingsModel = mongoose.model('settings', settingsSchema);
 
 export default SettingsModel;

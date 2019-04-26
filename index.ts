@@ -43,7 +43,7 @@ server.app.use( cors( { origin: true, credentials: true } ) );
 server.app.use( fileupload() );
 
 server.app.use(environment.prefix + '/auth', router.authRouter );
-server.app.use(environment.prefix + '/users', router.usersRouter );
+server.app.use(environment.prefix + '/users', passport.authenticate('jwt', {session: false}),router.usersRouter );
 
 
 

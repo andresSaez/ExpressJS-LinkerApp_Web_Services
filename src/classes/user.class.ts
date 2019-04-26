@@ -34,7 +34,7 @@ export class User implements IUser {
     lastconnection?: string;
     me?: boolean;
     onesignalid?: string;
-    contacts?: IUser[];
+    contacts?: string[];
     chats?: IChat[];
     rooms?: IRoom[];
     privaterooms?: IPrivateRoom[];
@@ -192,6 +192,27 @@ export class User implements IUser {
     }
 
     /**
+     * GET_USERS
+     */
+    static getUsers(id: any ) {
+        return new Promise( (resolve, reject) => {
+            UserModel.find( {}, ( err, res ) => {
+
+                if (err) {
+                    return reject(err);
+                }
+                else {
+                    resolve(res.map(uJSON => new User(uJSON)).map( (u: any) => {
+
+                        delete u.password;
+                        return u;
+                    }));
+                }
+            });
+        });
+    }
+
+    /**
      * GET_USER
      * @param id 
      */
@@ -205,7 +226,31 @@ export class User implements IUser {
                 else {
                     resolve(new User(res));
                 }
-            });
+            }).populate('settings');
+        });
+    }
+
+    /**
+     * GET_FRIENDS
+     * @param id 
+     */
+    static getFriends( id: any ) {
+        return new Promise( (resolve, reject) => {
+            UserModel.findById(id, ( err, res ) => {
+                if (err) {
+                    return reject(err);
+                }
+                else {
+                    let user: any = new User(res);
+                    let contactos = user.contacts.map( (c: any) => new User(c)).map( (cont: any) => {
+                        delete cont.password;
+                        delete cont.friend;
+                        delete cont.me;
+                        return cont;
+                    });
+                    resolve(contactos);
+                }
+            }).populate('contacts');
         });
     }
 
@@ -256,11 +301,30 @@ export class User implements IUser {
     }
 
     /**
+     * UPDATE_SETTINGS
+     * @param id 
+     * @param settings 
+     */
+    static async updateSettings( id: any, settings: any ) {
+        const logguedUser: any = await User.getUser(id);
+
+        return SettingsModel.findByIdAndUpdate( logguedUser.settings.id, {$set: {...settings }}, { new: true });
+    }
+
+    /**
      * UPDATE_COORDS
      * @param user 
      */
     static updateCoords( user: IUser ) {
         return UserModel.findByIdAndUpdate( user.id, {$set: { lat: user.lat, lng: user.lng }}, { new: true } );
+    }
+
+    /**
+     * DELETE_USER
+     * @param id 
+     */
+    static deleteUser( id: any ) {
+        return UserModel.findByIdAndRemove(id);
     }
 
     /**
