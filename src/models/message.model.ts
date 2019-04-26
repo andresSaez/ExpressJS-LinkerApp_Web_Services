@@ -16,11 +16,13 @@ let messageSchema = new mongoose.Schema({
     },
     checked: {
         type: Boolean,
-        required: true
+        required: true,
+        default: false
     },
     date: {
         type: Date,
-        required: true
+        required: true,
+        default: new Date()
     }
 });
 

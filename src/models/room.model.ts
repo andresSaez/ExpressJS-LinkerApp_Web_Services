@@ -17,15 +17,18 @@ let roomSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: false
+        required: false,
+        default: 'public/img/users/default-image.jpg'
     },
     hastags: {
         type: [String],
-        required: false
+        required: false,
+        default: []
     },
     date: {
         type: Date,
-        required: false
+        required: false,
+        default: new Date()
     },
     lat: {
         type: Number,
@@ -43,7 +46,8 @@ let roomSchema = new mongoose.Schema({
     members: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'users',
-        required: false
+        required: false,
+        default: []
     }
 });
 

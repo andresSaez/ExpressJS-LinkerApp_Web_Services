@@ -1,38 +1,44 @@
 import mongoose from 'mongoose';
 
 let settingsSchema = new mongoose.Schema({
-    userid: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    },
+    // userid: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     required: true
+    // },
     privacity: {
         blockedusers: {
             type: [mongoose.Schema.Types.ObjectId],
-            required: false
+            required: false,
+            default: []
         },
         lastconnection: {
             type: String,
             required: false,
-            trim: true
+            trim: true,
+            default: 'ALL'
         },
         profilephoto: {
             type: String,
             required: false,
-            trim: true
+            trim: true,
+            default: 'ALL'
         },
         profiledata: {
             showname: {
                 type: Boolean,
-                required: false
+                required: false,
+                default: true
             },
             showemail: {
                 type: Boolean,
-                required: false
+                required: false,
+                default: true
             },
             show: {
                 type: String,
                 required: false,
-                trim: true
+                trim: true,
+                default: 'ALL'
             }
         }
     },
@@ -40,23 +46,27 @@ let settingsSchema = new mongoose.Schema({
         private: {
             active: {
                 type: Boolean,
-                required: false
+                required: false,
+                default: true
             },
             exceptions: {
                 type: [mongoose.Schema.Types.ObjectId],
                 ref: 'privaterooms',
-                required: false
+                required: false,
+                default: []
             }
         },
         rooms: {
             active: {
                 type: Boolean,
-                required: false
+                required: false,
+                default: true
             },
             exceptions: {
                 type: [mongoose.Schema.Types.ObjectId],
                 ref: 'rooms',
-                required: false
+                required: false,
+                default: []
             }
         }
     },
@@ -64,7 +74,8 @@ let settingsSchema = new mongoose.Schema({
         type: String,
         maxlength: 3,
         trim: true,
-        required: false
+        required: false,
+        default: 'ENG'
     }
 });
 

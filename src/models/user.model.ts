@@ -25,12 +25,14 @@ let userSchema = new mongoose.Schema({
     },
     avatar: {
         type: String,
-        required: false
+        required: false,
+        default: 'public/img/users/default-profile.jpg'
     },
     biography: {
         type: String,
         required: false,
-        maxlength: 100
+        maxlength: 100,
+        default: ''
     },
     lat: {
         type: Number,
@@ -42,11 +44,13 @@ let userSchema = new mongoose.Schema({
     },
     interests: {
         type: [String],
-        required: false
+        required: false,
+        default: []
     },
     lastconnection: {
         type: Date,
-        required: false
+        required: false,
+        default: new Date()
     },
     onesignalid:{
         type: String,
@@ -56,17 +60,20 @@ let userSchema = new mongoose.Schema({
     contacts: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'users',
-        required: false
+        required: false,
+        default: []
     },
     rooms: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'rooms',
-        required: false
+        required: false,
+        default: []
     },
     privaterooms: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'privaterooms',
-        required: false
+        required: false,
+        default: []
     },
     settings: {
        type: mongoose.Schema.Types.ObjectId,

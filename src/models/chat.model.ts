@@ -4,7 +4,8 @@ let chatSchema = new mongoose.Schema({
     messages: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'messages',
-        required: false
+        required: false,
+        default: []
     }
 });
 

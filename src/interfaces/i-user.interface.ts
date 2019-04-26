@@ -22,4 +22,5 @@ export interface IUser {
     chats?: IChat[];
     rooms?: IRoom[];
     privaterooms?: IPrivateRoom[];
+    settings?: string;
 }
