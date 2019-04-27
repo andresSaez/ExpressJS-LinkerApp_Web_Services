@@ -3,7 +3,7 @@ import { IChat } from './i-chat.interface';
 
 export interface IRoom {
     id?: string;
-    creator?: IUser; // or string
+    creator?: string; // or string
     name?: string;
     description?: string;
     image?: string;
@@ -11,8 +11,8 @@ export interface IRoom {
     date?: string; // or date
     lat?: number;
     lng?: number;
-    members?: IUser[]; // Or string[]
-    chat?: IChat; // or string?
+    members?: string[]; // Or string[]
+    chat?: string; // or string?
     mine?: boolean;
     distance?: number;
 }

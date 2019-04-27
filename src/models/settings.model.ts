@@ -8,6 +8,7 @@ let settingsSchema = new mongoose.Schema({
     privacity: {
         blockedusers: {
             type: [mongoose.Schema.Types.ObjectId],
+            ref: 'users',
             required: false,
             default: []
         },

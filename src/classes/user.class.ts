@@ -11,6 +11,7 @@ import { IChat } from '../interfaces/i-chat.interface';
 import { IRoom } from '../interfaces/i-room.interface';
 import { IPrivateRoom } from '../interfaces/i-private-room.interface';
 import { ISettings } from '../interfaces/i-settings.interface';
+import { Settings } from './settings.class';
 
 //** GENERATE TOKEN */
 let generarToken = (id: any) => {
@@ -35,9 +36,9 @@ export class User implements IUser {
     me?: boolean;
     onesignalid?: string;
     contacts?: string[];
-    chats?: IChat[];
-    rooms?: IRoom[];
-    privaterooms?: IPrivateRoom[];
+    chats?: string[];
+    rooms?: string[];
+    privaterooms?: string[];
     settings?: string;
 
     constructor( userJSON: any ) {
@@ -216,7 +217,7 @@ export class User implements IUser {
      * GET_USER
      * @param id 
      */
-    static getUser( id: any ) {
+    static async getUser( id: any, idLogguedUser? : any ) {
         return new Promise( (resolve, reject) => {
             UserModel.findById(id, ( err, res ) => {
 
@@ -224,9 +225,21 @@ export class User implements IUser {
                     return reject(err);
                 }
                 else {
-                    resolve(new User(res));
+                    let result: any = new User(res);
+                    result.contacts = result.contacts.map( (userJSOn: any) => new User(userJSOn));
+                    result.friend = false;
+                    result.settings = new Settings(result.settings);
+
+                    if (idLogguedUser) {
+                        result.contacts.forEach( (element: any) => {
+                            if (element.id === idLogguedUser )
+                                result.friend = true;
+                        });
+                    } 
+                    
+                    resolve(result);
                 }
-            }).populate('settings');
+            }).populate('settings').populate('contacts');
         });
     }
 
@@ -268,6 +281,32 @@ export class User implements IUser {
                     resolve(new User(res));
                 }
             });
+        });
+    }
+
+    /**
+     * GET_SETTINGS
+     * @param id 
+     */
+    static async getSettings( id: any ) {
+        let logguedUser: any = await User.getUser(id);
+
+        return new Promise( (resolve, reject) => {
+            SettingsModel.findById(logguedUser.settings.id, (err, res) => {
+                if (err) {
+                    return reject(err);
+                }
+                else {
+                    let result: any = new Settings(res);
+                    result.privacity.blockedusers = result.privacity.blockedusers.map( (userJSOn: any) => new User(userJSOn));
+                    // result.notifications.private.exceptions = result.notifications.private.exceptions.map( (proomJSOn: any) => new PrivateRoom(proomJSOn));
+                    // result.notifications.rooms.exceptions = result.notifications.rooms.exceptions.map( (roomJSOn: any) => new Room(roomJSOn));
+
+                    resolve(new Settings(res));
+                }
+            }).populate({path: 'privacity.blockedusers', model: 'user'});
+                // .populate({path: 'notifications.private.exceptions', model: 'privateroom'})
+                // .populate({path: 'notifications.rooms.exceptions', model: 'room'});
         });
     }
 
@@ -317,6 +356,16 @@ export class User implements IUser {
      */
     static updateCoords( user: IUser ) {
         return UserModel.findByIdAndUpdate( user.id, {$set: { lat: user.lat, lng: user.lng }}, { new: true } );
+    }
+
+    /**
+     * ADD_FRIEND
+     * @param idFriend 
+     * @param idLogguedUser 
+     */
+    static async addFriend( idFriend: any, idLogguedUser: any ) {
+        await UserModel.findByIdAndUpdate( idFriend, {$push: { contacts: idLogguedUser } }, { new: true } );
+        return UserModel.findByIdAndUpdate( idLogguedUser, {$push: { contacts: idFriend } }, { new: true } );
     }
 
     /**

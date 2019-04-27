@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 let roomSchema = new mongoose.Schema({
     creator: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users',
-        required: true
+        ref: 'user',
+        required: false
     },
     name: {
         type: String,

@@ -19,8 +19,8 @@ export interface IUser {
     me?: boolean;
     onesignalid?: string;
     contacts?: string[];
-    chats?: IChat[];
-    rooms?: IRoom[];
-    privaterooms?: IPrivateRoom[];
+    chats?: string[];
+    rooms?: string[];
+    privaterooms?: string[];
     settings?: string;
 }

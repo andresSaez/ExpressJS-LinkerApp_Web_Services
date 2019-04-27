@@ -44,7 +44,7 @@ server.app.use( fileupload() );
 
 server.app.use(environment.prefix + '/auth', router.authRouter );
 server.app.use(environment.prefix + '/users', passport.authenticate('jwt', {session: false}),router.usersRouter );
-
+server.app.use(environment.prefix + '/rooms', passport.authenticate('jwt', {session: false}),router.roomsRouter );
 
 
 server.start( () => {

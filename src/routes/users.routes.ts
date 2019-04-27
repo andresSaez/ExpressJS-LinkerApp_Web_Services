@@ -33,7 +33,7 @@ router.get('/me', (req: Request, res: Response) => {
  * GET /users/:id
  */
 router.get('/:id', (req: Request, res: Response) => {
-    User.getUser(req.params.id).then((result: any) => {
+    User.getUser(req.params.id, req.user.id).then((result: any) => {
         if (result.id) {
             result.me = req.user.id === req.params.id;
             res.send({ error: false, user: result })
@@ -53,6 +53,17 @@ router.get('/me/friends', (req: Request, res: Response) => {
     }).catch(error => {
         res.status(404).send({error: true, errorMessage: "Error: " +error});
     });
+});
+
+/**
+ * GET /users/me/settings
+ */
+router.get('/me/settings', ( req: Request, res: Response ) => {
+    User.getSettings(req.user.id).then( (result: any) => {
+        res.send({error: false, result: result })
+    }).catch(error => {
+        res.status(404).send({ error: true, errorMessage: "Error: " +error});
+    })
 });
 
 /**
@@ -113,6 +124,17 @@ router.put('/me/settings', (req: Request, res: Response) => {
             res.status(400).send({error: true, errorMessage: "Error: "+error});
         });
     }
+});
+
+/**
+ * PUT /users/me/friends
+ */
+router.put('/me/friends', (req: Request, res: Response) => {
+    User.addFriend(req.body.id, req.user.id).then( (result: any) => {
+        res.send({ error: false, result: result })
+    }).catch(error => {
+        res.status(400).send({error: true, errorMessage: "Error: " +error});
+    });
 });
 
 /**
