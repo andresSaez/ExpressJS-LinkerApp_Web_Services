@@ -15,10 +15,21 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 /**
+ * GET /rooms/me
+ */
+router.get('/me', (req: Request, res: Response) => {
+    Room.getMyRooms(req.user.id).then( (result: any) => {
+        res.send({ error: false, result: result });
+    }).catch(error => {
+        res.status(400).send({error: true, errorMessage: "Error: " +error});
+    })
+});
+
+/**
  * GET /rooms/:id
  */
 router.get('/:id', (req: Request, res: Response) => {
-    Room.getRoom(req.body.id, req.user.id).then( (result: any) => {
+    Room.getRoom(req.params.id, req.user.id).then( (result: any) => {
         res.send({ error: false, result: result });
     }).catch(error => {
         res.status(400).send({ error: true, errorMessage: "Error: " +error });
@@ -33,6 +44,28 @@ router.post('/', (req: Request, res: Response) => {
         res.send({ error: false, result: result });
     }).catch(error => {
         res.status(400).send({error: true, errorMessage: "Error: " +error});
+    });
+});
+
+/**
+ * UPDATE /rooms
+ */
+router.put('/', ( req: Request, res: Response) => {
+    Room.updateRoom(req.body).then( (result: any) => {
+        res.send({ error: false, result: result });
+    }).catch(error => {
+        res.status(400).send({error: true, errorMessage: "Error: " +error});
+    });
+});
+
+/**
+ * UPDATE /rooms/:id/add-member
+ */
+router.get('/', (req: Request, res: Response) => {
+    Room.joinRoom(req.params.id, req.user.id).then( (result: any) => {
+        res.send({ error: false, result: result });
+    }).catch(error => {
+        res.status(400).send({ error: true, errorMessage: "Error: " +error});
     });
 });
 

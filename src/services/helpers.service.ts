@@ -2,7 +2,7 @@
 
 export class HelpersService {
 
-    static getDistance( lat1: number, lng1: number, lat2: number, lng2: number ) {
+    static getDistance( lat1: number, lng1: number, lat2: any, lng2: any ) {
 
         const earthRadius = 6371; // Km
         // const earth = 3960; // miles, change accordingly

@@ -3,6 +3,7 @@ import { Chat } from "./chat.class";
 import RoomModel from "../models/room.model";
 import { User } from "./user.class";
 import { HelpersService } from "../services/helpers.service";
+import UserModel from "../models/user.model";
 
 export class Room implements IRoom {
 
@@ -67,7 +68,6 @@ export class Room implements IRoom {
      */
     static async getRooms( id: any ) {
         let logguedUser: any = await User.getUser(id);
-        console.log('estoy aqui');
         return new Promise( (resolve, reject) => {
             RoomModel.find({}, (err, res) => {
                 if (err) return reject(err);
@@ -89,9 +89,22 @@ export class Room implements IRoom {
      * @param idRoom 
      * @param logguedUserId 
      */
-    static getRoom( idRoom: any, logguedUserId: any ) {
+    static async getRoom( idRoom: any, logguedUserId: any ) {
+        let logguedUser: any = await User.getUser(logguedUserId);
         return new Promise( (resolve, reject) => {
-
+            RoomModel.findById( idRoom, (err, res) => {
+                if (err) return reject(err);
+                else {
+                    let room = new Room(res);
+                    room.mine = false;
+                    room.distance = HelpersService.getDistance(logguedUser.lat, logguedUser.lng, room.lat, room.lng);
+                    room.creator = new User(room.creator);
+                    if (room.creator.id === logguedUserId) {
+                        room.mine = true;
+                    }
+                    resolve(room);
+                }
+            }).populate('creator');
         });
     }
 
@@ -99,20 +112,37 @@ export class Room implements IRoom {
      * GET_MY_ROOMS
      * @param logguedUserId 
      */
-    static getMyRooms( logguedUserId: any ) {
-        return new Promise( (resolve, reject) => {
+    static async getMyRooms( logguedUserId: any ) {
+        let logguedUser: any = await User.getUser(logguedUserId);
 
+        return new Promise( (resolve, reject) => {
+            RoomModel.find({ creator: logguedUserId}, (err, res) => {
+                if (err) return reject(err);
+                else {
+                    let rooms = res.map(roomJSON => new Room(roomJSON)).map( (r: any) => {
+                        r.distance = HelpersService.getDistance(logguedUser.lat, logguedUser.lng, r.lat, r.lng);
+                        return r;
+                    });
+                    resolve(rooms);
+                }
+            });
         });
+        
     }
 
     /**
      * UPDATE_ROOM
-     * @param idRoom 
+     * @param room 
      */
     static updateRoom( room: any ) {
-        return new Promise( (resolve, reject) => {
+        return RoomModel.findByIdAndUpdate( room.id, {$set: {...room} }, { new: true});
+    }
 
-        });
+
+    static async joinRoom( idSala: any, logguedUserId: any ) {
+        await UserModel.findByIdAndUpdate( logguedUserId, {$push: { rooms: idSala } }, { new: true } );
+
+        return RoomModel.findByIdAndUpdate( idSala, {$push: { members: logguedUserId}}, { new: true } );
     }
 
 }
