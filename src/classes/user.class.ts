@@ -99,6 +99,7 @@ export class User implements IUser {
 
         if (!emailExist) {
             user.password = md5(<any>user.password);
+            user.avatar = "public/img/users/default-profile.jpg";
         }
 
         if (emailExist) {
