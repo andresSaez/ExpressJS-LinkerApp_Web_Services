@@ -11,7 +11,6 @@ export interface IRoom {
     date?: Date; // or date
     lat?: number;
     lng?: number;
-    lastmessage?: any;
     members?: string[]; // Or string[]
     chat?: string; // or string?
     mine?: boolean;

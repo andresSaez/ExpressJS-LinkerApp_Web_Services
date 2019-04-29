@@ -38,11 +38,6 @@ let roomSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    lastmessage: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'message',
-        required: false
-    },
     chat: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'chat',

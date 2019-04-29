@@ -6,6 +6,11 @@ let chatSchema = new mongoose.Schema({
         ref: 'messages',
         required: false,
         default: []
+    },
+    lastmessage: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'message',
+        required: false,
     }
 });
 

@@ -34,6 +34,6 @@ export class Message implements IMessage {
         let newMessage = new MessageModel({...message});
         let saveMessage = await newMessage.save();
 
-        return ChatModel.findByIdAndUpdate( idChat, {$push: { messages: saveMessage.id }}, { new: true } );
+        return ChatModel.findByIdAndUpdate( idChat, {$push: { messages: saveMessage.id }, $set: { lastmessage: saveMessage.id }}, { new: true } );
     }
 }

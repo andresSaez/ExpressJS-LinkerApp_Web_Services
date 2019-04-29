@@ -18,7 +18,6 @@ export class Room implements IRoom {
     date?: Date; // or date
     lat?: number;
     lng?: number;
-    lastmessage?: any;
     members?: any; // Or string[]
     chat?: any; // or string?
     mine?: boolean;
@@ -34,7 +33,6 @@ export class Room implements IRoom {
         this.date = roomJSON && roomJSON.date || null;
         this.lat = roomJSON && roomJSON.lat || null;
         this.lng = roomJSON && roomJSON.lng || null;
-        this.lastmessage = roomJSON && roomJSON.lastmessage || null;
         this.members = roomJSON && roomJSON.members || [];
         this.chat = roomJSON && roomJSON.chat || null;
         this.mine = roomJSON && roomJSON.mine || null;
@@ -100,13 +98,13 @@ export class Room implements IRoom {
                     room.distance = HelpersService.getDistance(logguedUser.lat, logguedUser.lng, room.lat, room.lng);
                     room.creator = new User(room.creator);
                     room.members = room.members.map( (memberJSON: any) => new User(memberJSON));
-                    room.lastmessage = new Message(room.lastmessage);
+    
                     if (room.creator.id === logguedUserId) {
                         room.mine = true;
                     }
                     resolve(room);
                 }
-            }).populate('creator').populate('lastmessage').populate({path: 'members', model: 'user'});
+            }).populate('creator').populate({path: 'members', model: 'user'});
         });
     }
 
@@ -124,12 +122,13 @@ export class Room implements IRoom {
                     let rooms = res.map(roomJSON => new Room(roomJSON)).map( (r: any) => {
                         r.distance = HelpersService.getDistance(logguedUser.lat, logguedUser.lng, r.lat, r.lng);
                         r.creator = new User(r.creator);
-                        r.lastmessage = new Message(r.lastmessage);
+                        r.chat = new Chat(r.chat);
+                        r.chat.lastmessage = new Message(r.chat.lastmessage);
                         return r;
                     });
                     resolve(rooms);
                 }
-            }).populate('creator').populate('lastmessage');
+            }).populate('creator').populate({path: 'chat', populate: { path: 'lastmessage'}});
         });
         
     }

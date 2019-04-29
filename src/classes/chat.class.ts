@@ -6,15 +6,17 @@ export class Chat implements IChat {
 
     id?: string;
     messages: any[];
+    lastmessage?: any;
 
     constructor( chatJSON: any ) {
         this.id = chatJSON && chatJSON.id || null; 
         this.messages = chatJSON && chatJSON.messages || null;
+        this.lastmessage = chatJSON && chatJSON.lastmessage || null;
     }
 
     static newChat() {
         let chat = {
-            messages: []
+            messages: [],
         };
 
         let newChat = new ChatModel({...chat});
@@ -28,9 +30,10 @@ export class Chat implements IChat {
                 else {
                     let chat = new Chat(res);
                     chat.messages = chat.messages.map( messageJSON => new Message( messageJSON) );
+                    chat.lastmessage = new Message(chat.lastmessage);
                     resolve(chat);
                 }
-            }).populate('messages');
+            }).populate('lastmessage').populate({path: 'messages', model: 'message'});
         });
         
     }
