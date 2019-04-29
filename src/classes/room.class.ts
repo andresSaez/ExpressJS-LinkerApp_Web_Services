@@ -4,6 +4,8 @@ import RoomModel from "../models/room.model";
 import { User } from "./user.class";
 import { HelpersService } from "../services/helpers.service";
 import UserModel from "../models/user.model";
+import ImageService from "../services/image.service";
+import { Message } from "./message.class";
 
 export class Room implements IRoom {
 
@@ -13,9 +15,10 @@ export class Room implements IRoom {
     description?: string;
     image?: string;
     hastags?: string[];
-    date?: string; // or date
+    date?: Date; // or date
     lat?: number;
     lng?: number;
+    lastmessage?: any;
     members?: any; // Or string[]
     chat?: any; // or string?
     mine?: boolean;
@@ -31,6 +34,7 @@ export class Room implements IRoom {
         this.date = roomJSON && roomJSON.date || null;
         this.lat = roomJSON && roomJSON.lat || null;
         this.lng = roomJSON && roomJSON.lng || null;
+        this.lastmessage = roomJSON && roomJSON.lastmessage || null;
         this.members = roomJSON && roomJSON.members || [];
         this.chat = roomJSON && roomJSON.chat || null;
         this.mine = roomJSON && roomJSON.mine || null;
@@ -45,21 +49,17 @@ export class Room implements IRoom {
      */
     static async createRoom( room: any, creator: any) {
         let chat: any = await Chat.newChat();
+        room.image = await ImageService.saveImage('room', room.image);
+        room.date = new Date();
         let roomEnt = new Room({...room});
         roomEnt.chat = chat.id;
         roomEnt.members.push(creator);
         roomEnt.creator = creator;
 
         let newRoom = new RoomModel({...roomEnt});
+        let saveRoom = await newRoom.save();
 
-        return new Promise( (resolve, reject) => {
-            newRoom.save({}, (err, res) => {
-                if (err) return reject(err);
-                else {
-                    resolve(res);
-                }
-            });
-        }); 
+        return UserModel.findByIdAndUpdate( creator, {$push: { rooms: saveRoom.id } }, { new: true } );
     }
 
     /**
@@ -99,12 +99,14 @@ export class Room implements IRoom {
                     room.mine = false;
                     room.distance = HelpersService.getDistance(logguedUser.lat, logguedUser.lng, room.lat, room.lng);
                     room.creator = new User(room.creator);
+                    room.members = room.members.map( (memberJSON: any) => new User(memberJSON));
+                    room.lastmessage = new Message(room.lastmessage);
                     if (room.creator.id === logguedUserId) {
                         room.mine = true;
                     }
                     resolve(room);
                 }
-            }).populate('creator');
+            }).populate('creator').populate('lastmessage').populate({path: 'members', model: 'user'});
         });
     }
 
@@ -116,19 +118,43 @@ export class Room implements IRoom {
         let logguedUser: any = await User.getUser(logguedUserId);
 
         return new Promise( (resolve, reject) => {
-            RoomModel.find({ creator: logguedUserId}, (err, res) => {
+            RoomModel.find({ members: logguedUserId}, (err, res) => {
                 if (err) return reject(err);
                 else {
                     let rooms = res.map(roomJSON => new Room(roomJSON)).map( (r: any) => {
                         r.distance = HelpersService.getDistance(logguedUser.lat, logguedUser.lng, r.lat, r.lng);
+                        r.creator = new User(r.creator);
+                        r.lastmessage = new Message(r.lastmessage);
                         return r;
                     });
                     resolve(rooms);
                 }
-            });
+            }).populate('creator').populate('lastmessage');
         });
         
     }
+
+    // /**
+    //  * GET_MY_ROOMS
+    //  * @param logguedUserId 
+    //  */
+    // static async getMyRooms( logguedUserId: any ) {
+    //     let logguedUser: any = await User.getUser(logguedUserId);
+
+    //     return new Promise( (resolve, reject) => {
+    //         RoomModel.find({ creator: logguedUserId}, (err, res) => {
+    //             if (err) return reject(err);
+    //             else {
+    //                 let rooms = res.map(roomJSON => new Room(roomJSON)).map( (r: any) => {
+    //                     r.distance = HelpersService.getDistance(logguedUser.lat, logguedUser.lng, r.lat, r.lng);
+    //                     return r;
+    //                 });
+    //                 resolve(rooms);
+    //             }
+    //         }).populate('creator').populate('lastmessage');
+    //     });
+        
+    // }
 
     /**
      * UPDATE_ROOM
@@ -138,7 +164,21 @@ export class Room implements IRoom {
         return RoomModel.findByIdAndUpdate( room.id, {$set: {...room} }, { new: true});
     }
 
+    /**
+     * UPDATE_IMAGE
+     * @param room 
+     */
+    static async updateImage( image: any, idRoom: any ) {
+        image = await ImageService.saveImage('room', image);
 
+        return RoomModel.findByIdAndUpdate( idRoom, {$set: { image: image }}, { new: true } );
+    }
+
+    /**
+     * JOIN_TO_ROOM
+     * @param idSala 
+     * @param logguedUserId 
+     */
     static async joinRoom( idSala: any, logguedUserId: any ) {
         await UserModel.findByIdAndUpdate( logguedUserId, {$push: { rooms: idSala } }, { new: true } );
 

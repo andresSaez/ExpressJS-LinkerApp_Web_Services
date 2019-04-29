@@ -8,9 +8,10 @@ export interface IRoom {
     description?: string;
     image?: string;
     hastags?: string[];
-    date?: string; // or date
+    date?: Date; // or date
     lat?: number;
     lng?: number;
+    lastmessage?: any;
     members?: string[]; // Or string[]
     chat?: string; // or string?
     mine?: boolean;

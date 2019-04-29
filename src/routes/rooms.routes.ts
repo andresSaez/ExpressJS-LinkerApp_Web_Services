@@ -48,7 +48,22 @@ router.post('/', (req: Request, res: Response) => {
 });
 
 /**
- * UPDATE /rooms
+ * PUT /rooms/:id/image
+ */
+router.put('/:id/image', (req: Request, res: Response) => {
+    if (!req.body.image)
+        res.status(400).send({error: true, errorMessage: "No data has been sent or it is not correct"});
+    else {
+        Room.updateImage(req.body.image, req.params.id).then( (result: any) => {
+            res.send({error: false, image: result.image });
+        }).catch(error => {
+            res.status(400).send({error: true, errorMessage: "Error: "+error});
+        });
+    }
+});
+
+/**
+ * PUT /rooms
  */
 router.put('/', ( req: Request, res: Response) => {
     Room.updateRoom(req.body).then( (result: any) => {
@@ -59,9 +74,9 @@ router.put('/', ( req: Request, res: Response) => {
 });
 
 /**
- * UPDATE /rooms/:id/add-member
+ * PUT /rooms/:id/add-member
  */
-router.get('/', (req: Request, res: Response) => {
+router.put('/', (req: Request, res: Response) => {
     Room.joinRoom(req.params.id, req.user.id).then( (result: any) => {
         res.send({ error: false, result: result });
     }).catch(error => {

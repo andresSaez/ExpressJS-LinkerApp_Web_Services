@@ -26,6 +26,6 @@ let messageSchema = new mongoose.Schema({
     }
 });
 
-let MessageModel = mongoose.model('user', messageSchema);
+let MessageModel = mongoose.model('message', messageSchema);
 
 export default MessageModel;

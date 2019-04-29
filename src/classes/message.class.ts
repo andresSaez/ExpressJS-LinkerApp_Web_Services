@@ -1,4 +1,7 @@
 import { IMessage } from "../interfaces/i-message.interface";
+import ImageService from "../services/image.service";
+import MessageModel from "../models/message.model";
+import ChatModel from "../models/chat.model";
 
 export class Message implements IMessage {
 
@@ -8,7 +11,7 @@ export class Message implements IMessage {
     image?: string;
     checked?: boolean;
     date?: string;  // or date
-    mine?: boolean;
+    // mine?: boolean;
 
     constructor( messageJSON: any ) {
         this.id = messageJSON && messageJSON.id || null; 
@@ -17,10 +20,20 @@ export class Message implements IMessage {
         this.image = messageJSON && messageJSON.image || null;
         this.checked = messageJSON && messageJSON.checked || null;
         this.date = messageJSON && messageJSON.date || null;
-        this.mine = messageJSON && messageJSON.mine || null;
+        // this.mine = messageJSON && messageJSON.mine || null;
     }
 
-    static newMessage() {
-        
+    static async newMessage( message: any, idChat: any, idLogguedUser: any) {
+        if (message.image !== '') {
+            message.image = await ImageService.saveImage(`chat/${idChat}`, message.image);
+        }
+        message.date = new Date();
+        message.creator = idLogguedUser;
+        message.checked = false;
+
+        let newMessage = new MessageModel({...message});
+        let saveMessage = await newMessage.save();
+
+        return ChatModel.findByIdAndUpdate( idChat, {$push: { messages: saveMessage.id }}, { new: true } );
     }
 }
