@@ -47,7 +47,7 @@ export class Room implements IRoom {
      */
     static async createRoom( room: any, creator: any) {
         let chat: any = await Chat.newChat();
-        room.image = await ImageService.saveImage('room', room.image);
+        // room.image = await ImageService.saveImage('room', room.image);
         room.date = new Date();
         let roomEnt = new Room({...room});
         roomEnt.chat = chat.id;
@@ -57,7 +57,9 @@ export class Room implements IRoom {
         let newRoom = new RoomModel({...roomEnt});
         let saveRoom = await newRoom.save();
 
-        return UserModel.findByIdAndUpdate( creator, {$push: { rooms: saveRoom.id } }, { new: true } );
+        UserModel.findByIdAndUpdate( creator, {$push: { rooms: saveRoom.id } }, { new: true } );
+
+        return this.getRoom(saveRoom.id, creator);
     }
 
     /**

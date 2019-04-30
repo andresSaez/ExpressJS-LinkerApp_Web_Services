@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 let messageSchema = new mongoose.Schema({
     creator: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'user',
         required: true
     },
     content: {

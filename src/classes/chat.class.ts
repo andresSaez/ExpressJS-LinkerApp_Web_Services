@@ -1,6 +1,7 @@
 import { IChat } from "../interfaces/i-chat.interface";
 import ChatModel from "../models/chat.model";
 import { Message } from "./message.class";
+import { User } from "./user.class";
 
 export class Chat implements IChat {
 
@@ -23,17 +24,23 @@ export class Chat implements IChat {
         return newChat.save();
     }
 
-    static getChat( idChat: any ) {
+    static getChat( idChat: any, idLogguedUser: any ) {
         return new Promise( (resolve, reject) => {
             ChatModel.findById( idChat, (err, res) => {
                 if (err) return reject(err);
                 else {
                     let chat = new Chat(res);
-                    chat.messages = chat.messages.map( messageJSON => new Message( messageJSON) );
+                    chat.messages = chat.messages.map( messageJSON => new Message( messageJSON)).map(( m: any) => {
+                        m.creator = new User(m.creator);
+                        delete m.creator.password;
+                        if (m.creator.id === idLogguedUser) m.mine = true;
+                        else m.mine = false; 
+                        return m; 
+                    });
                     chat.lastmessage = new Message(chat.lastmessage);
                     resolve(chat);
                 }
-            }).populate('lastmessage').populate({path: 'messages', model: 'message'});
+            }).populate('lastmessage').populate({path: 'messages', model: 'message', populate: {path: 'creator', ref: 'user'}});
         });
         
     }

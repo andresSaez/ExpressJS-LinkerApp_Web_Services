@@ -67,6 +67,17 @@ router.get('/me/settings', ( req: Request, res: Response ) => {
 });
 
 /**
+ * GET /users/:id/settings
+ */
+router.get('/:id/settings', ( req: Request, res: Response ) => {
+    User.getUserSettings(req.params.id).then( (result: any) => {
+        res.send({error: false, result: result })
+    }).catch(error => {
+        res.status(404).send({ error: true, errorMessage: "Error: " +error});
+    })
+});
+
+/**
  * PUT /users/me
  */
 router.put('/me', (req: Request, res: Response) => {
@@ -119,7 +130,7 @@ router.put('/me/settings', (req: Request, res: Response) => {
         res.status(400).send({error: true, errorMessage: "No data has been sent or it is not correct"});
     else {
         User.updateSettings(req.user.id, req.body).then( (result: any) => {
-            res.send({error: false, settings: result });
+            res.send({error: false, result: result });
         }).catch(error => {
             res.status(400).send({error: true, errorMessage: "Error: "+error});
         });
@@ -131,7 +142,7 @@ router.put('/me/settings', (req: Request, res: Response) => {
  */
 router.put('/me/friends', (req: Request, res: Response) => {
     User.addFriend(req.body.id, req.user.id).then( (result: any) => {
-        res.send({ error: false, result: result })
+        res.send({ error: false, ok: true })
     }).catch(error => {
         res.status(400).send({error: true, errorMessage: "Error: " +error});
     });
@@ -142,7 +153,7 @@ router.put('/me/friends', (req: Request, res: Response) => {
  */
 router.delete('/me', (req: Request, res: Response) => {
     User.deleteUser(req.user.id).then((result: any) => {
-        res.send({error: false, result: result.id });
+        res.send({error: false, ok: true });
     }).catch(error => {
         res.status(400).send({error: true, errorMessage: "Error: " + error });
     });

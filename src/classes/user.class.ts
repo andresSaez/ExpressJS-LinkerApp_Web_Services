@@ -312,6 +312,14 @@ export class User implements IUser {
     }
 
     /**
+     * GET_USER_SETTINGS
+     * @param idUser 
+     */
+    static async getUserSettings( idUser: any ) {
+        
+    }
+
+    /**
      * UPDATE_USER_INFO
      * @param id 
      * @param user 

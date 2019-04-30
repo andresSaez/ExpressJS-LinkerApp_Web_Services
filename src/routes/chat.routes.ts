@@ -7,7 +7,7 @@ const router = Router();
  * GET /chat/:id
  */
 router.get('/:id', (req: Request, res: Response) => {
-    Chat.getChat(req.params.id).then( (result: any) => {
+    Chat.getChat(req.params.id, req.user.id).then( (result: any) => {
         res.send({ error: false, result: result });
     }).catch(error => {
         res.status(400).send({ error: true, errorMessage: "Error: " +error});

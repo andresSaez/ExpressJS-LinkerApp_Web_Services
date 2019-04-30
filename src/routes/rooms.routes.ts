@@ -76,7 +76,7 @@ router.put('/', ( req: Request, res: Response) => {
 /**
  * PUT /rooms/:id/add-member
  */
-router.put('/', (req: Request, res: Response) => {
+router.put('/:id/add-member', (req: Request, res: Response) => {
     Room.joinRoom(req.params.id, req.user.id).then( (result: any) => {
         res.send({ error: false, result: result });
     }).catch(error => {

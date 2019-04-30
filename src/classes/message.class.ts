@@ -2,6 +2,7 @@ import { IMessage } from "../interfaces/i-message.interface";
 import ImageService from "../services/image.service";
 import MessageModel from "../models/message.model";
 import ChatModel from "../models/chat.model";
+import { User } from "./user.class";
 
 export class Message implements IMessage {
 
@@ -11,7 +12,7 @@ export class Message implements IMessage {
     image?: string;
     checked?: boolean;
     date?: string;  // or date
-    // mine?: boolean;
+    mine?: boolean;
 
     constructor( messageJSON: any ) {
         this.id = messageJSON && messageJSON.id || null; 
@@ -34,6 +35,28 @@ export class Message implements IMessage {
         let newMessage = new MessageModel({...message});
         let saveMessage = await newMessage.save();
 
-        return ChatModel.findByIdAndUpdate( idChat, {$push: { messages: saveMessage.id }, $set: { lastmessage: saveMessage.id }}, { new: true } );
+        await ChatModel.findByIdAndUpdate( idChat, {$push: { messages: saveMessage.id }}, { new: true } );
+        await ChatModel.findByIdAndUpdate( idChat, {$set: { lastmessage: saveMessage.id }}, { new: true } );
+
+        return this.getMessage( saveMessage.id, idLogguedUser);
+    }
+
+    static getMessage( id: string, idLogguedUser: string ) {
+        return new Promise( (resolve, reject) => {
+            MessageModel.findById(id, (err, res) => {
+                if (err) return reject(err);
+                else {
+                    let message = new Message(res);
+                    
+                    message.creator = new User(message.creator);
+                    if(message.creator.id === idLogguedUser) message.mine = true;
+                    else message.mine = false;
+
+                    delete message.creator.password;
+                    
+                    resolve(message);
+                }
+            }).populate({ path: 'creator', ref: 'user'});
+        });
     }
 }
