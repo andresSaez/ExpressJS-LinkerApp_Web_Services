@@ -14,7 +14,7 @@ router.get('/validate', ( req: Request , res: Response ) => {
     if (resultado)
       res.send({ok: true });
     else 
-      res.status(401).send({error: true });
+      res.status(401).send({ok: false });
 });
 
 /**
