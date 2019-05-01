@@ -47,7 +47,12 @@ export class Room implements IRoom {
      */
     static async createRoom( room: any, creator: any) {
         let chat: any = await Chat.newChat();
-        // room.image = await ImageService.saveImage('room', room.image);
+
+        if (room.image.includes('default-image.jpg')) {
+            room.image = "public/img/room/default-image.jpg"
+        } else {
+            room.image = await ImageService.saveImage('room', room.image);
+        }
         room.date = new Date();
         let roomEnt = new Room({...room});
         roomEnt.chat = chat.id;
