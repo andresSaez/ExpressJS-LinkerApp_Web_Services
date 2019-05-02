@@ -1,7 +1,6 @@
 
 export interface ISettings {
     id?: string;
-    userid?: string;
     privacity?: IPrivacitySettings;
     notifications?: INotificationsSettings;
     language?: LanguageOptions;

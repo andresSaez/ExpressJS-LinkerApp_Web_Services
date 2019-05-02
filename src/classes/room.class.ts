@@ -191,4 +191,15 @@ export class Room implements IRoom {
         return RoomModel.findByIdAndUpdate( idSala, {$push: { members: logguedUserId}}, { new: true } );
     }
 
+    /**
+     * LEAVE_ROOM
+     * @param idRoom 
+     * @param logguedUserId 
+     */
+    static async leaveRoom( idRoom: any, logguedUserId: any ) {
+        await UserModel.findByIdAndUpdate( logguedUserId, {$pull: { rooms: idRoom } }, { new: true } );
+
+        return RoomModel.findByIdAndUpdate( idRoom, {$pull: { members: logguedUserId}}, { new: true } );
+    }
+
 }

@@ -7,6 +7,7 @@ import passport from 'passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import jwt from 'jsonwebtoken';
 import { environment } from './environments/environment';
+import Express from 'express';
 
 /** IMPORT ROUTES */
 import * as router from './src/routes';
@@ -42,6 +43,7 @@ server.app.use( cors( { origin: true, credentials: true } ) );
 // Fileupload
 server.app.use( fileupload() );
 
+server.app.use(environment.prefix + '/public/img/', Express.static('public/img'));
 server.app.use(environment.prefix + '/auth', router.authRouter );
 server.app.use(environment.prefix + '/users', passport.authenticate('jwt', {session: false}),router.usersRouter );
 server.app.use(environment.prefix + '/rooms', passport.authenticate('jwt', {session: false}),router.roomsRouter );

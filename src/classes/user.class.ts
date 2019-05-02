@@ -354,9 +354,10 @@ export class User implements IUser {
      * @param settings 
      */
     static async updateSettings( id: any, settings: any ) {
+        const updateSettings = new Settings({...settings});
         const logguedUser: any = await User.getUser(id);
 
-        return SettingsModel.findByIdAndUpdate( logguedUser.settings.id, {$set: {...settings }}, { new: true });
+        return SettingsModel.findByIdAndUpdate( logguedUser.settings.id, {$set: {...updateSettings }}, { new: true });
     }
 
     /**
