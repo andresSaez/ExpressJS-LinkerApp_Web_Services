@@ -7,7 +7,7 @@ export interface ISettings {
 }
 
 export interface IPrivacitySettings {
-    blockedusers: string[];
+    blockedusers: any[];
     lastconnection: PrivacityOptions;
     profilephoto: PrivacityOptions;
     profiledata: ProfileDataPrivacitySettings;

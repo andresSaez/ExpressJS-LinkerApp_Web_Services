@@ -43,12 +43,11 @@ let roomSchema = new mongoose.Schema({
         ref: 'chat',
         required: false
     },
-    members: {
-        type: [mongoose.Schema.Types.ObjectId],
+    members: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
-        required: false,
-        default: []
-    }
+        required: false
+    }]
 });
 
 let RoomModel = mongoose.model('room', roomSchema);

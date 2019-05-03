@@ -78,6 +78,17 @@ router.get('/:id/settings', ( req: Request, res: Response ) => {
 });
 
 /**
+ * GET /users/me/settings/blockedusers
+ */
+router.get('/me/settings/blockedusers', ( req: Request, res: Response ) => {
+    User.getBlockedUsers(req.user.id).then( (result: any) => {
+        res.send({error: false, result: result })
+    }).catch(error => {
+        res.status(404).send({ error: true, errorMessage: "Error: " +error});
+    })
+});
+
+/**
  * PUT /users/me
  */
 router.put('/me', (req: Request, res: Response) => {

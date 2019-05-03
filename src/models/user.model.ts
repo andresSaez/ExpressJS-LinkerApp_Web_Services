@@ -57,24 +57,21 @@ let userSchema = new mongoose.Schema({
         required: false,
         trim: true
     },
-    contacts: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'users',
-        required: false,
-        default: []
-    },
-    rooms: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'rooms',
-        required: false,
-        default: []
-    },
-    privaterooms: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'privaterooms',
-        required: false,
-        default: []
-    },
+    contacts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: false
+    }],
+    rooms: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'room',
+        required: false
+    }],
+    privaterooms: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'privateroom',
+        required: false
+    }],
     settings: {
        type: mongoose.Schema.Types.ObjectId,
        ref: 'settings',

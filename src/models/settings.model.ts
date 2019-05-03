@@ -6,12 +6,11 @@ let settingsSchema = new mongoose.Schema({
     //     required: true
     // },
     privacity: {
-        blockedusers: {
-            type: [mongoose.Schema.Types.ObjectId],
-            ref: 'users',
-            required: false,
-            default: []
-        },
+        blockedusers: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'user',
+            required: false
+        }],
         lastconnection: {
             type: String,
             required: false,
@@ -50,12 +49,11 @@ let settingsSchema = new mongoose.Schema({
                 required: false,
                 default: true
             },
-            exceptions: {
-                type: [mongoose.Schema.Types.ObjectId],
-                ref: 'privaterooms',
-                required: false,
-                default: []
-            }
+            exceptions: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'privateroom',
+                required: false
+            }]
         },
         rooms: {
             active: {
@@ -63,12 +61,11 @@ let settingsSchema = new mongoose.Schema({
                 required: false,
                 default: true
             },
-            exceptions: {
-                type: [mongoose.Schema.Types.ObjectId],
-                ref: 'rooms',
-                required: false,
-                default: []
-            }
+            exceptions: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'room',
+                required: false
+            }]
         }
     },
     language: {

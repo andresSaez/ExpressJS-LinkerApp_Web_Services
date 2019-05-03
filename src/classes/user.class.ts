@@ -268,6 +268,23 @@ export class User implements IUser {
         });
     }
 
+    static async getBlockedUsers( id: any ) {
+        const logguedUserSettings: any = await this.getSettings(id);
+
+        console.log(logguedUserSettings.privacity.blockedusers);
+
+        return new Promise( (resolve, reject) => {
+            UserModel.find({ _id: {$in: logguedUserSettings.privacity.blockedusers }}, (err, res) => {
+                if (err) return reject(err);
+                else {
+                    const result: any = res.map( (userJSON) => new User(userJSON));
+
+                    resolve(result);
+                }
+            });
+        });
+    }
+
     /**
      * GET_USER_BY_EMAIL
      * @param email 
@@ -298,14 +315,17 @@ export class User implements IUser {
                     return reject(err);
                 }
                 else {
+                    console.log(res);
                     let result: any = new Settings(res);
-                    result.privacity.blockedusers = result.privacity.blockedusers.map( (userJSOn: any) => new User(userJSOn));
+
+                    console.log(result);
+                    // result.privacity.blockedusers = result.privacity.blockedusers.map( (userJSOn: any) => { new User(userJSOn); });
                     // result.notifications.private.exceptions = result.notifications.private.exceptions.map( (proomJSOn: any) => new PrivateRoom(proomJSOn));
                     // result.notifications.rooms.exceptions = result.notifications.rooms.exceptions.map( (roomJSOn: any) => new Room(roomJSOn));
 
-                    resolve(new Settings(res));
+                    resolve(result);
                 }
-            }).populate({path: 'privacity.blockedusers', model: 'user'});
+            });
                 // .populate({path: 'notifications.private.exceptions', model: 'privateroom'})
                 // .populate({path: 'notifications.rooms.exceptions', model: 'room'});
         });
@@ -354,10 +374,22 @@ export class User implements IUser {
      * @param settings 
      */
     static async updateSettings( id: any, settings: any ) {
-        const updateSettings = new Settings({...settings});
+        // console.log(settings);
+        // const updateSettings = new Settings({...settings});
+        // console.log(updateSettings);
         const logguedUser: any = await User.getUser(id);
+        console.log(settings.privacity.blockedusers);
+        const updateSettings = {
+            ...settings,
+            privacity: {
+                ...settings.privacity,
+                blockedusers: [...settings.privacity.blockedusers]
+            }
+        }
 
-        return SettingsModel.findByIdAndUpdate( logguedUser.settings.id, {$set: {...updateSettings }}, { new: true });
+        console.log(updateSettings);
+
+        return SettingsModel.findByIdAndUpdate( logguedUser.settings.id, {$set: {...updateSettings} }, { new: true });
     }
 
     /**
