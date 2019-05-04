@@ -89,6 +89,28 @@ router.get('/me/settings/blockedusers', ( req: Request, res: Response ) => {
 });
 
 /**
+ * GET /users/me/settings/room-exceptions
+ */
+router.get('/me/settings/room-exceptions', ( req: Request, res: Response ) => {
+    User.getRoomExceptions(req.user.id).then( (result: any) => {
+        res.send({error: false, result: result })
+    }).catch(error => {
+        res.status(404).send({ error: true, errorMessage: "Error: " +error});
+    })
+});
+
+/**
+ * GET /users/me/settings/proom-exceptions
+ */
+router.get('/me/settings/proom-exceptions', ( req: Request, res: Response ) => {
+    User.getPrivateRoomExceptions(req.user.id).then( (result: any) => {
+        res.send({error: false, result: result })
+    }).catch(error => {
+        res.status(404).send({ error: true, errorMessage: "Error: " +error});
+    })
+});
+
+/**
  * PUT /users/me
  */
 router.put('/me', (req: Request, res: Response) => {

@@ -12,6 +12,8 @@ import { IRoom } from '../interfaces/i-room.interface';
 import { IPrivateRoom } from '../interfaces/i-private-room.interface';
 import { ISettings } from '../interfaces/i-settings.interface';
 import { Settings } from './settings.class';
+import RoomModel from '../models/room.model';
+import { Room } from './room.class';
 
 //** GENERATE TOKEN */
 let generarToken = (id: any) => {
@@ -268,6 +270,10 @@ export class User implements IUser {
         });
     }
 
+    /**
+     * GET_BLOCKED_USERS
+     * @param id 
+     */
     static async getBlockedUsers( id: any ) {
         const logguedUserSettings: any = await this.getSettings(id);
 
@@ -275,6 +281,48 @@ export class User implements IUser {
 
         return new Promise( (resolve, reject) => {
             UserModel.find({ _id: {$in: logguedUserSettings.privacity.blockedusers }}, (err, res) => {
+                if (err) return reject(err);
+                else {
+                    const result: any = res.map( (userJSON) => new User(userJSON));
+
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    /**
+     * GET_ROOM_EXCEPTIONS
+     * @param id 
+     */
+    static async getRoomExceptions( id: any ) {
+        const logguedUserSettings: any = await this.getSettings(id);
+
+        console.log(logguedUserSettings.notifications.rooms.exceptions);
+
+        return new Promise( (resolve, reject) => {
+            RoomModel.find({ _id: {$in: logguedUserSettings.notifications.rooms.exceptions }}, (err, res) => {
+                if (err) return reject(err);
+                else {
+                    const result: any = res.map( (roomJSON) => new Room(roomJSON));
+
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    /**
+     * GET_PROOM_EXCEPTIONS
+     * @param id 
+     */
+    static async getPrivateRoomExceptions( id: any ) {
+        const logguedUserSettings: any = await this.getSettings(id);
+
+        console.log(logguedUserSettings.notifications.private.exceptions);
+
+        return new Promise( (resolve, reject) => {
+            UserModel.find({ _id: {$in: logguedUserSettings.notifications.private.exceptions }}, (err, res) => {
                 if (err) return reject(err);
                 else {
                     const result: any = res.map( (userJSON) => new User(userJSON));
@@ -345,7 +393,17 @@ export class User implements IUser {
      * @param user 
      */
     static updateUserInfo( id: any, user: IUser ) {
-        return UserModel.findByIdAndUpdate( id, {$set: {...user} }, { new: true});
+        console.log(user);
+        const newUserInfo = {
+            nick: user.nick,
+            name: user.name,
+            email: user.email,
+            interests: user.interests,
+            biography: user.biography,
+            lat: user.lat,
+            lng: user.lng
+        };
+        return UserModel.findByIdAndUpdate( id, {$set: {...newUserInfo} }, { new: true});
     }
 
     /**
@@ -384,6 +442,16 @@ export class User implements IUser {
             privacity: {
                 ...settings.privacity,
                 blockedusers: [...settings.privacity.blockedusers]
+            },
+            notifications: {
+                private: {
+                    ...settings.notifications.private,
+                    exceptions: [...settings.notifications.private.exceptions]
+                },
+                rooms: {
+                    ...settings.notifications.rooms,
+                    exceptions: [...settings.notifications.rooms.exceptions]
+                }
             }
         }
 
@@ -414,8 +482,10 @@ export class User implements IUser {
      * DELETE_USER
      * @param id 
      */
-    static deleteUser( id: any ) {
-        return UserModel.findByIdAndRemove(id);
+    static async deleteUser( id: any ) {
+        // return UserModel.findByIdAndRemove(id);
+        await UserModel.findByIdAndUpdate( id, {$set: { avatar: 'public/img/users/default-profile.jpg' }}, { new: true } );
+        return UserModel.findByIdAndUpdate( id, {$set: { email: 'deleted@email.com' }}, { new: true } );
     }
 
     /**

@@ -131,11 +131,12 @@ export class Room implements IRoom {
                         r.creator = new User(r.creator);
                         r.chat = new Chat(r.chat);
                         r.chat.lastmessage = new Message(r.chat.lastmessage);
+                        r.chat.lastmessage.creator = new User(r.chat.lastmessage.creator);
                         return r;
                     });
                     resolve(rooms);
                 }
-            }).populate('creator').populate({path: 'chat', populate: { path: 'lastmessage'}});
+            }).populate('creator').populate({path: 'chat', populate: { path: 'lastmessage', populate: { path: 'creator' }}});
         });
         
     }

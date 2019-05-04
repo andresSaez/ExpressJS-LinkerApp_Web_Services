@@ -69,7 +69,7 @@ let userSchema = new mongoose.Schema({
     }],
     privaterooms: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'privateroom',
+        ref: 'user',
         required: false
     }],
     settings: {
