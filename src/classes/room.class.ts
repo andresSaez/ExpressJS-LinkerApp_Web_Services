@@ -63,7 +63,7 @@ export class Room implements IRoom {
         let newRoom = new RoomModel({...roomEnt});
         let saveRoom = await newRoom.save();
 
-        UserModel.findByIdAndUpdate( creator, {$push: { rooms: saveRoom.id } }, { new: true } );
+        await UserModel.findByIdAndUpdate( creator, {$push: { rooms: saveRoom.id } }, { new: true } );
 
         return this.getRoom(saveRoom.id, creator);
     }

@@ -47,6 +47,7 @@ server.app.use(environment.prefix + '/public/img/', Express.static('public/img')
 server.app.use(environment.prefix + '/auth', router.authRouter );
 server.app.use(environment.prefix + '/users', passport.authenticate('jwt', {session: false}),router.usersRouter );
 server.app.use(environment.prefix + '/rooms', passport.authenticate('jwt', {session: false}),router.roomsRouter );
+server.app.use(environment.prefix + '/private-rooms', passport.authenticate('jwt', {session: false}),router.privateroomsRouter );
 server.app.use(environment.prefix + '/messages', passport.authenticate('jwt', {session: false}),router.messagesRouter );
 server.app.use(environment.prefix + '/chat', passport.authenticate('jwt', {session: false}),router.chatRouter );
 
