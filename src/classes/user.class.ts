@@ -401,7 +401,7 @@ export class User implements IUser {
             interests: user.interests,
             biography: user.biography,
             lat: user.lat,
-            lng: user.lng
+            lng: user.lng,
         };
         return UserModel.findByIdAndUpdate( id, {$set: {...newUserInfo} }, { new: true});
     }

@@ -6,6 +6,7 @@ import { HelpersService } from "../services/helpers.service";
 import UserModel from "../models/user.model";
 import ImageService from "../services/image.service";
 import { Message } from "./message.class";
+var ObjectId = require('mongoose').Types.ObjectId;
 
 export class Room implements IRoom {
 
@@ -123,7 +124,7 @@ export class Room implements IRoom {
         let logguedUser: any = await User.getUser(logguedUserId);
 
         return new Promise( (resolve, reject) => {
-            RoomModel.find({ members: logguedUserId}, (err, res) => {
+            RoomModel.find({ _id: { $in: logguedUser.rooms } }, (err, res) => {
                 if (err) return reject(err);
                 else {
                     let rooms = res.map(roomJSON => new Room(roomJSON)).map( (r: any) => {
@@ -140,6 +141,32 @@ export class Room implements IRoom {
         });
         
     }
+
+    // /**
+    //  * GET_MY_ROOMS
+    //  * @param logguedUserId 
+    //  */
+    // static async getMyRooms( logguedUserId: any ) {
+    //     let logguedUser: any = await User.getUser(logguedUserId);
+
+    //     return new Promise( (resolve, reject) => {
+    //         RoomModel.find({ members: logguedUserId}, (err, res) => {
+    //             if (err) return reject(err);
+    //             else {
+    //                 let rooms = res.map(roomJSON => new Room(roomJSON)).map( (r: any) => {
+    //                     r.distance = HelpersService.getDistance(logguedUser.lat, logguedUser.lng, r.lat, r.lng);
+    //                     r.creator = new User(r.creator);
+    //                     r.chat = new Chat(r.chat);
+    //                     r.chat.lastmessage = new Message(r.chat.lastmessage);
+    //                     r.chat.lastmessage.creator = new User(r.chat.lastmessage.creator);
+    //                     return r;
+    //                 });
+    //                 resolve(rooms);
+    //             }
+    //         }).populate('creator').populate({path: 'chat', populate: { path: 'lastmessage', populate: { path: 'creator' }}});
+    //     });
+        
+    // }
 
     // /**
     //  * GET_MY_ROOMS
@@ -198,6 +225,8 @@ export class Room implements IRoom {
      * @param logguedUserId 
      */
     static async leaveRoom( idRoom: any, logguedUserId: any ) {
+        console.log('room: ',  idRoom, 'user: ', logguedUserId );
+        console.log(typeof idRoom);
         await UserModel.findByIdAndUpdate( logguedUserId, {$pull: { rooms: idRoom } }, { new: true } );
 
         return RoomModel.findByIdAndUpdate( idRoom, {$pull: { members: logguedUserId}}, { new: true } );

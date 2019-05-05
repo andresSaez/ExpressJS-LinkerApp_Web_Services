@@ -92,6 +92,7 @@ router.put('/:id/delete-member', (req: Request, res: Response) => {
     Room.leaveRoom(req.params.id, req.user.id).then( (result: any) => {
         res.send({ error: false, result: result });
     }).catch(error => {
+        console.log(error);
         res.status(400).send({ error: true, errorMessage: "Error: " +error});
     });
 });
