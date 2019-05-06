@@ -90,4 +90,29 @@ export class PrivateRoom implements IPrivateRoom {
         
     }
 
+    /**
+     * GET_PRIVATE_ROOM
+     * @param idRoom 
+     * @param logguedUserId 
+     */
+    static async getPrivateRoom( idRoom: any, logguedUserId: any ) {
+        // let logguedUser: any = await User.getUser(logguedUserId);
+        return new Promise( (resolve, reject) => {
+            PrivateroomModel.findById( idRoom, (err, res) => {
+                if (err) return reject(err);
+                else {
+                    let room: any = new PrivateRoom(res);
+                    
+                    room.members = room.members.map( (userJSON: any) => new User(userJSON));
+                    room.chat = new Chat(room.chat);
+                    room.chat.lastmessage = new Message(room.chat.lastmessage);
+                    room.chat.lastmessage.creator = new User(room.chat.lastmessage.creator);
+                    room.addressee = room.members.filter( (el: any) => el.id !== logguedUserId);
+                    room.addressee = room.addressee[0];
+                    resolve(room);
+                }
+            }).populate({path: 'members', model: 'user'}).populate({path: 'chat', populate: { path: 'lastmessage', populate: { path: 'creator' }}});
+        });
+    }
+
 }
