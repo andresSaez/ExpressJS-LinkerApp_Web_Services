@@ -13,6 +13,19 @@ export default class AuthService {
           });   
         })
     }
+
+    static comprobarTokenTwitter(token: any) {
+      return new Promise((resolve, reject) => {
+        request.get('https://api.twitter.com/oauth/authenticate?oauth_token='+token, function(err: any, resp: any, body: any) {
+          if (err) {
+            console.log(err);
+            reject(err);
+          } else{
+            resolve(JSON.parse(body));
+          }
+        });   
+      })
+  }
 }
 
 

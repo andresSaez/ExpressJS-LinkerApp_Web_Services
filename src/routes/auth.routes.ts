@@ -77,4 +77,19 @@ router.post('/facebook', ( req: Request, res: Response ) => {
   });
 });
 
+/**
+ * POST /auth/twitter
+ */
+router.post('/twitter', ( req: Request, res: Response ) => {
+  User.loginTwitter(req.body).then( (result: any) => {
+    res.send({error: false, accessToken: result });
+  }).catch( (error: any) => {
+    res.status(401).send({
+      statusCode: 401,
+      error: true,
+      errorMessage: "Something has failed: " + error
+    });
+  });
+});
+
 export { router as authRouter };

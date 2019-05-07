@@ -134,7 +134,7 @@ export class User implements IUser {
 
         let user: any = await User.getUserByEmail(respUser.email);
 
-        if (!user) {
+        if (!user.id) {
             const optionsImg = {
                 method: 'GET',
                 uri: 'https://graph.facebook.com/me/picture',
@@ -148,6 +148,7 @@ export class User implements IUser {
             user = {
                 email: respUser.email,
                 name: respUser.name,
+                nick: respUser.name,
                 avatar: avatar,
                 lat: tokenDto.lat ? tokenDto.lat : 0,
                 lng: tokenDto.lng ? tokenDto.lng : 0,
@@ -175,8 +176,9 @@ export class User implements IUser {
 
         const avatar = await ImageService.downloadImage('users', datosToken.image.url);
 
-        if (!user) {
+        if (!user.id) {
             let newUser = {
+                nick: datosToken.name.givenName,
                 name : datosToken.name.givenName,
                 avatar : avatar,
                 email : datosToken.emails[0].value,
@@ -193,6 +195,20 @@ export class User implements IUser {
         let usuarioComprobado: any = await User.getUserByEmail(datosToken.emails[0].value);
 
         return generarToken(usuarioComprobado.id);
+    }
+
+    /**
+     * LOGIN_TWITTER
+     * @param datosUser 
+     */
+    static async loginTwitter( datosUser: any ) {
+
+        console.log(datosUser);
+
+        const datosToken: any = await AuthService.comprobarTokenTwitter(datosUser.token);
+
+        console.log(datosToken);
+
     }
 
     /**
