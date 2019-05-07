@@ -3,7 +3,7 @@ import { environment } from '../../environments/environment';
 import socketIO from 'socket.io';
 import http from 'http';
 
-// import * as socket from '../sockets';
+import * as socket from '../sockets';
 
 export default class Server {
 
@@ -34,6 +34,15 @@ export default class Server {
         console.log('Listenning connections - sockets');
 
         this.io.on('connection', client => {
+
+            // Conectar cliente
+            socket.connectClient( client, this.io );
+            
+            // Messages
+            socket.message(client, this.io );
+
+            // Disconnect
+            socket.disconnect( client, this.io );
 
         });
     }
