@@ -3,6 +3,7 @@ import ChatModel from "../models/chat.model";
 import { Message } from "./message.class";
 import { User } from "./user.class";
 
+
 export class Chat implements IChat {
 
     id?: string;
