@@ -3,6 +3,8 @@ import ImageService from "../services/image.service";
 import MessageModel from "../models/message.model";
 import ChatModel from "../models/chat.model";
 import { User } from "./user.class";
+import { PushService } from "../services/push.service";
+import { PrivateRoom } from "./privateroom.class";
 
 export class Message implements IMessage {
 
@@ -37,6 +39,17 @@ export class Message implements IMessage {
 
         await ChatModel.findByIdAndUpdate( idChat, {$push: { messages: saveMessage.id }}, { new: true } );
         await ChatModel.findByIdAndUpdate( idChat, {$set: { lastmessage: saveMessage.id }}, { new: true } );
+
+        // For Push Notifications
+        const privateRoom: any = await PrivateRoom.getPrivateRoomByChatId(idChat, idLogguedUser );
+        const logguedUser: any = await User.getUser(idLogguedUser); // Chargue loggued user
+
+        if (privateRoom.id && privateRoom.addressee.id ) {
+            if (privateRoom.addressee.onesignalid) {
+                PushService.sendMessage(privateRoom.addressee.onesignalid, `${logguedUser.nick} say:`, `${message.content.substring(0, 25)}...` , { proomId: privateRoom.id });
+            }
+        }
+        //////////////////
 
         return this.getMessage( saveMessage.id, idLogguedUser);
     }

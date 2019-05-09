@@ -81,6 +81,11 @@ export class User implements IUser {
             userEnt.lng = user.lng;
             await User.updateCoords(userEnt);
         }
+
+        if (user.onesignalid) {
+            userEnt.onesignalid = user.onesignalid;
+            await UserModel.findByIdAndUpdate( userEnt.id, {$set: { onesignalid: userEnt.onesignalid }}, { new: true } );
+        }
         
         return new Promise(( resolve, reject) => {
             if ( !resultado ) {
@@ -160,6 +165,11 @@ export class User implements IUser {
             await User.updateCoords(user);
         }
 
+        if (tokenDto.onesignalid) {
+            user.onesignalid = tokenDto.onesignalid;
+            await UserModel.findByIdAndUpdate( user.id, {$set: { onesignalid: user.onesignalid }}, { new: true } );
+        }
+
         let usuarioComprobado: any = await User.getUserByEmail(respUser.email);
 
         return generarToken(usuarioComprobado.id);
@@ -190,6 +200,11 @@ export class User implements IUser {
             user.lat = datosUser.lat;
             user.lng = datosUser.lng;
             await User.updateCoords(user);
+        }
+
+        if (datosUser.onesignalid) {
+            user.onesignalid = datosUser.onesignalid;
+            await UserModel.findByIdAndUpdate( user.id, {$set: { onesignalid: user.onesignalid }}, { new: true } );
         }
         
         let usuarioComprobado: any = await User.getUserByEmail(datosToken.emails[0].value);
