@@ -26,7 +26,7 @@ export class Message implements IMessage {
 
     static async newMessage( message: any, idChat: any, idLogguedUser: any) {
         if (message.image !== '') {
-            message.image = await ImageService.saveImage(`chat/${idChat}`, message.image);
+            message.image = await ImageService.saveImage(`messages`, message.image);
         }
         message.date = new Date();
         message.creator = idLogguedUser;
