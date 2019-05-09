@@ -42,9 +42,11 @@ export class Message implements IMessage {
 
         // For Push Notifications
         const privateRoom: any = await PrivateRoom.getPrivateRoomByChatId(idChat, idLogguedUser );
+        console.log('privateRoom' + privateRoom);
         const logguedUser: any = await User.getUser(idLogguedUser); // Chargue loggued user
 
-        if (privateRoom.id && privateRoom.addressee.id ) {
+        if (privateRoom) {
+            console.log('dentro del if');
             if (privateRoom.addressee.onesignalid) {
                 PushService.sendMessage(privateRoom.addressee.onesignalid, `${logguedUser.nick} say:`, `${message.content.substring(0, 25)}...` , { proomId: privateRoom.id });
             }
